@@ -4,7 +4,7 @@
 
 2. 克隆XASM Community仓库。
     ```bash
-    git clone https://github.com/W9pi3cZ1/xasm-community.git
+    git clone https://github.com/XYSlime/xasm-community.git
     ```
 
 3. 进入仓库目录，并执行编译命令。
