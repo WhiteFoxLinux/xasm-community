@@ -138,11 +138,6 @@ struct OptData parse_options(int argc, char** argv){
 }
 
 size_t get_filesize(char* filename){
-    // long filesize = 0;
-    // fseek(filepointer,0,SEEK_END);
-    // filesize = ftell(filepointer);
-    // fseek(filepointer,0,SEEK_SET);
-    // return filesize;
     struct stat stat_buf;
     stat(filename,&stat_buf);
     size_t filesize = stat_buf.st_size;
@@ -162,18 +157,6 @@ struct CommandHex parse_command_to_hex(char* command){
     command_hex.valid = 1;
     //command_hex.comment = NULL;
     char hex;
-    /*
-    char* comment = strstr(command,"//");
-    if(comment != NULL){
-        command_hex.comment = comment + 2;
-        printf("comment: %s\n",command_hex.comment);
-        int comment_pos = comment - command;
-        if(comment_pos == 0){
-            command_hex.valid = 0;
-            return command_hex;
-        }
-        command[comment_pos] = '\0';
-    }*/
     char* endptr;
     char tmp_hex = strtol(command,&endptr,16);
     if(str_eqi(command,"add")){
@@ -272,8 +255,9 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
     enum StringKind string_kind = STRING_SQM;
     for(;continue_flag;readcount++)
     {
-        readbuf[readcount] = fgetc(file_ptr);
 
+        readbuf[readcount] = fgetc(file_ptr);
+        
         if(readbuf[readcount] == EOF){
             break;
         }
@@ -287,14 +271,38 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
                 switch (readbuf[readcount])
                 {
                 case '\'':
-                    if(readbuf[readcount - 1] == '\\'){
-                        readcount--;
-                        readbuf[readcount] = '\'';
-                        continue;
-                    }
                     continue_flag = 0;
                     break;
                 
+                case '\\':
+                    readcount++;
+                    readbuf[readcount] = fgetc(file_ptr);
+                    switch (readbuf[readcount])
+                    {
+                    case EOF:
+                        continue_flag = 0;
+                        break;
+
+
+                    case 'n':
+                        readcount--;
+                        readbuf[readcount] = '\n';
+                        break;
+
+                    case 't':
+                        readcount--;
+                        readbuf[readcount] = '\t';
+                        break;
+
+                    default:
+                        readcount--;
+                        readbuf[readcount] = readbuf[readcount+1];
+                        break;
+                    }
+                    break;
+                    // if(readbuf[readcount] == EOF){
+                    //     break;
+                    // }
                 default:
                     continue;
                     break;
@@ -305,13 +313,38 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
                 switch (readbuf[readcount])
                 {
                 case '"':
-                    if(readbuf[readcount - 1] == '\\'){
-                        readcount--;
-                        readbuf[readcount] = '"';
-                        continue;
-                    }
                     continue_flag = 0;
                     break;
+                
+                case '\\':
+                    readcount++;
+                    readbuf[readcount] = fgetc(file_ptr);
+                    switch (readbuf[readcount])
+                    {
+                    case EOF:
+                        continue_flag = 0;
+                        break;
+
+
+                    case 'n':
+                        readcount--;
+                        readbuf[readcount] = '\n';
+                        break;
+
+                    case 't':
+                        readcount--;
+                        readbuf[readcount] = '\t';
+                        break;
+
+                    default:
+                        readcount--;
+                        readbuf[readcount] = readbuf[readcount+1];
+                        break;
+                    }
+                    break;
+                    // if(readbuf[readcount] == EOF){
+                    //     break;
+                    // }
                 
                 default:
                     continue;
@@ -386,8 +419,8 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
         default:
             break;
         }
-
         if(!continue_flag){
+            //readcount--;
             break;
         }
     }
