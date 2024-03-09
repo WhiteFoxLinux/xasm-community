@@ -287,8 +287,12 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
                 switch (readbuf[readcount])
                 {
                 case '\'':
+                    if(readbuf[readcount - 1] == '\\'){
+                        readcount--;
+                        readbuf[readcount] = '\'';
+                        continue;
+                    }
                     continue_flag = 0;
-                    readcount--;
                     break;
                 
                 default:
@@ -301,8 +305,12 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
                 switch (readbuf[readcount])
                 {
                 case '"':
+                    if(readbuf[readcount - 1] == '\\'){
+                        readcount--;
+                        readbuf[readcount] = '"';
+                        continue;
+                    }
                     continue_flag = 0;
-                    readcount--;
                     break;
                 
                 default:
