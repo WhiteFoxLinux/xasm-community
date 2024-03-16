@@ -48,9 +48,10 @@ int str_eqi(char* s1,char* s2){
 int logger(const char* __fmt,...){
     va_list args;
     va_start(args,__fmt);
-    vfprintf(stdout,__fmt,args);
+    int i = vfprintf(stdout,__fmt,args);
     fflush(stdout);
     va_end(args);
+    return i;
 }
 
 Option loop_parse_options(int argc,char** argv){
@@ -129,7 +130,7 @@ typedef struct {
 
 Command parse_command(Command command){
     command.valid = 1;
-    char hex;
+    int hex;
 
     if(str_eqi(command.str,"add")){
         hex = 0x01;
@@ -204,7 +205,7 @@ typedef enum {
     STRING_DQM,
 }StringKind;
 
-char* readbuf;
+char readbuf[0xffffffff];
 Command read_command(FILE* file_ptr){
     Command command;
     CommandKind kind = NORMAL;
@@ -213,7 +214,7 @@ Command read_command(FILE* file_ptr){
     StringKind string_kind = STRING_SQM;
     for(;continue_flag;readindex++)
     {
-        readbuf = (char*)realloc(readbuf,readindex+1);
+        // readbuf = (char*)realloc(readbuf,readindex+1);
         readbuf[readindex] = fgetc(file_ptr);
         
         if(readbuf[readindex] == EOF){
