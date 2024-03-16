@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
 #include <stdarg.h>
 
 #if defined __linux__ || defined __APPLE__
@@ -20,12 +19,11 @@ int getch(void){
 #elif defined _WIN32
 #include <windows.h>
 #include <conio.h>
-void usleep(int usec) 
-{ 
+void usleep(int usec){
     HANDLE timer; 
     LARGE_INTEGER ft; 
 
-    ft.QuadPart = -(10*usec); // Convert to 100 nanosecond interval, negative value indicates relative time
+    ft.QuadPart = -(10*usec);
 
     timer = CreateWaitableTimer(NULL, TRUE, NULL); 
     SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0); 
@@ -34,9 +32,13 @@ void usleep(int usec)
 }
 #endif
 
+// Version 版本
+
 const char* OS = "linux";
 const char* ARCH = "amd64";
-const char* VERSION = "a0.0.2_debug"; 
+const char* VERSION = "a0.0.3_debug"; 
+
+// Print Help 打印帮助
 
 void print_help(char** argv){
     printf("XASM VM %s Community Version (%s_%s)\n",VERSION,OS,ARCH);
@@ -49,14 +51,13 @@ void print_help(char** argv){
     printf("  -c, --cpu-clock Nhz\tlimit cpu clock\n");
 }
 
-struct OptData
-{
+typedef struct {
     char* input_file;
     char* log_file;
     int cpu_clock;
     int non_log_file;
     int exit;
-};
+}Option;
 
 int str_eq(char* s1,char* s2){
     for(int index=0;;index++){
@@ -69,11 +70,11 @@ int str_eq(char* s1,char* s2){
     }
 }
 
-struct OptData loop_parse_options(int argc, char** argv){
-    struct OptData option_data;
+Option loop_parse_options(int argc, char** argv){
+    Option option_data;
     option_data.exit = 0;
     option_data.input_file = "main";
-    option_data.log_file = "xasm.log";
+    option_data.log_file = "xasm.xmlog";
     option_data.cpu_clock = -1;
     option_data.non_log_file = 0;
 
@@ -146,24 +147,15 @@ struct OptData loop_parse_options(int argc, char** argv){
     return option_data;
 }
 
-struct OptData parse_options(int argc, char** argv){
-    struct OptData option_data;
+Option parse_options(int argc, char** argv){
+    Option option_data;
     option_data.exit = 1;
     if(argc == 1){
         print_help(argv);
         option_data.exit = 1;
-    }else{
-        option_data = loop_parse_options(argc,argv);
     }
-    return option_data;
+    return option_data = loop_parse_options(argc,argv);
 };
-
-size_t get_filesize(char* filename){
-    struct stat stat_buf;
-    stat(filename,&stat_buf);
-    size_t filesize = stat_buf.st_size;
-    return filesize;
-}
 
 FILE* log_file = NULL;
 char* log_file_name = NULL;
@@ -183,12 +175,12 @@ int logger(const char *__format, ...){
 int* virt_mem=NULL;
 unsigned int exec_ptr=0;
 
-enum ExecuteMode {
+typedef enum {
     EXECUTE_NORMAL=0,
     EXECUTE_STORAGE,
-};
+}ExecuteMode;
 
-int execute_mode = EXECUTE_NORMAL;
+ExecuteMode execute_mode = EXECUTE_NORMAL;
 
 
 enum {
@@ -231,13 +223,13 @@ enum {
 };
 
 int init_virt_memory(){
-    virt_mem = realloc(virt_mem, 0xfffffffful * 4ul); //先尝试直接分配 0xffffffff 个 int 内存
-    if(virt_mem == NULL){ //直接分配 失败
-        virt_mem = realloc(virt_mem, 0xfffffffful * 1ul); //先分配 0xffffffff 个 1字节 内存
-        virt_mem = realloc(virt_mem, 0xfffffffful * 2ul); //先分配 0xffffffff 个 2字节 内存
-        virt_mem = realloc(virt_mem, 0xfffffffful * 3ul); //先分配 0xffffffff 个 3字节 内存
-        virt_mem = realloc(virt_mem, 0xfffffffful * 4ul); //再分配 0xffffffff 个 4字节 内存
-        if(virt_mem == NULL){
+    virt_mem = realloc(virt_mem, 0xfffffffful * 4ul); // 先尝试直接分配 0xffffffff 个 int 内存
+    if(virt_mem == NULL){ // 直接分配 失败
+        virt_mem = realloc(virt_mem, 0xfffffffful * 1ul); // 先分配 0xffffffff 个 1字节 内存
+        virt_mem = realloc(virt_mem, 0xfffffffful * 2ul); // 先分配 0xffffffff 个 2字节 内存
+        virt_mem = realloc(virt_mem, 0xfffffffful * 3ul); // 先分配 0xffffffff 个 3字节 内存
+        virt_mem = realloc(virt_mem, 0xfffffffful * 4ul); // 再分配 0xffffffff 个 4字节 内存
+        if(virt_mem == NULL){ // 无法分配 0xffffffff 个 int 内存
             return 1;
         }
     }
@@ -245,45 +237,36 @@ int init_virt_memory(){
     return 0;
 }
 
-void read_coms_to_mem(char* comfile_name){
-    FILE* comfile_pointer = fopen(comfile_name,"r");
+void readbin(char* binfile_name){
+    FILE* binfile_ptr = fopen(binfile_name,"r");
 
-    if(comfile_pointer == NULL){
-        printf("Could not open file '%s'\n",comfile_name);
+    if(binfile_ptr == NULL){
+        printf("Could not open file '%s'\n",binfile_name);
         exit(1);
         return;
     }
-
-    size_t comfile_size = get_filesize(comfile_name);
-
-    logger("program filesize: %zu\n",comfile_size);
     
-    // fread(virt_memory,comfile_size,1,comfile_pointer);
-    // for(size_t index=0;index<comfile_size;index++){
-    //     virt_mem[index]=fgetc(comfile_pointer);
-    // }
     size_t index = 0;
-    while ((virt_mem[index] = fgetc(comfile_pointer)) != EOF)
+    while ((virt_mem[index] = fgetc(binfile_ptr)) != EOF)
     {
         index++;
     }
-    
 
-    fclose(comfile_pointer);
+    fclose(binfile_ptr);
 }
 
-int hexsmerge(int hex1,int hex2,int hex3,int hex4){
+int hex_merge(int hex1,int hex2,int hex3,int hex4){
     return (hex1 << 24) + (hex2 << 16) + (hex3 << 8) + hex4;
 }
 
-#define curhexs_merge() hexsmerge(virt_mem[exec_ptr+1],virt_mem[exec_ptr+2],virt_mem[exec_ptr+3],virt_mem[exec_ptr+4])
+#define merge() hex_merge(virt_mem[exec_ptr+1],virt_mem[exec_ptr+2],virt_mem[exec_ptr+3],virt_mem[exec_ptr+4])
 
 // 运算类
 
 void add(){
-    unsigned int n1_addr = curhexs_merge();
+    unsigned int n1_addr = merge();
     exec_ptr += 4;
-    unsigned int n2_addr = curhexs_merge();
+    unsigned int n2_addr = merge();
     exec_ptr += 4;
     logger("Add(0x%08x,0x%08x)\n",n1_addr,n2_addr);
 
@@ -293,9 +276,9 @@ void add(){
 }
 
 void sub(){
-    unsigned int n1_addr = curhexs_merge();
+    unsigned int n1_addr = merge();
     exec_ptr += 4;
-    unsigned int n2_addr = curhexs_merge();
+    unsigned int n2_addr = merge();
     exec_ptr += 4;
     logger("Sub(0x%08x,0x%08x)\n",n1_addr,n2_addr);
 
@@ -305,9 +288,9 @@ void sub(){
 }
 
 void xadd(){
-    unsigned int n1_addr = curhexs_merge();
+    unsigned int n1_addr = merge();
     exec_ptr += 4;
-    unsigned int n2_addr = curhexs_merge();
+    unsigned int n2_addr = merge();
     exec_ptr += 4;
     logger("Xadd(0x%08x,0x%08x)\n",n1_addr,n2_addr);
 
@@ -317,9 +300,9 @@ void xadd(){
 }
 
 void xsub(){
-    unsigned int n1_addr = curhexs_merge();
+    unsigned int n1_addr = merge();
     exec_ptr += 4;
-    unsigned int n2_addr = curhexs_merge();
+    unsigned int n2_addr = merge();
     exec_ptr += 4;
     logger("Xsub(0x%08x,0x%08x)\n",n1_addr,n2_addr);
 
@@ -331,11 +314,11 @@ void xsub(){
 // 逻辑判断类
 
 void land(){
-    unsigned int n1_addr = curhexs_merge();
+    unsigned int n1_addr = merge();
     exec_ptr += 4;
-    unsigned int n2_addr = curhexs_merge();
+    unsigned int n2_addr = merge();
     exec_ptr += 4;
-    unsigned int b_addr = curhexs_merge();
+    unsigned int b_addr = merge();
     exec_ptr += 4;
     logger("LAnd(0x%08x,0x%08x,0x%08x)\n",n1_addr,n2_addr,b_addr);
 
@@ -345,11 +328,11 @@ void land(){
 }
 
 void lor(){
-    unsigned int n1_addr = curhexs_merge();
+    unsigned int n1_addr = merge();
     exec_ptr += 4;
-    unsigned int n2_addr = curhexs_merge();
+    unsigned int n2_addr = merge();
     exec_ptr += 4;
-    unsigned int b_addr = curhexs_merge();
+    unsigned int b_addr = merge();
     exec_ptr += 4;
     logger("LOr(0x%08x,0x%08x,0x%08x)\n",n1_addr,n2_addr,b_addr);
 
@@ -359,9 +342,9 @@ void lor(){
 }
 
 void lnot(){
-    unsigned int n1_addr = curhexs_merge();
+    unsigned int n1_addr = merge();
     exec_ptr += 4;
-    unsigned int b_addr = curhexs_merge();
+    unsigned int b_addr = merge();
     exec_ptr += 4;
     logger("LNot(0x%08x,0x%08x)\n",n1_addr,b_addr);
 
@@ -373,9 +356,9 @@ void lnot(){
 // 控制类
 
 void mov(){
-    unsigned int var_addr = curhexs_merge();
+    unsigned int var_addr = merge();
     exec_ptr += 4;
-    int val = curhexs_merge();
+    int val = merge();
     exec_ptr += 4;
     logger("Mov(0x%08x,0x%08x)\n",var_addr,val);
 
@@ -384,9 +367,9 @@ void mov(){
 }
 
 void copy(){
-    unsigned int var1_addr = curhexs_merge();
+    unsigned int var1_addr = merge();
     exec_ptr += 4;
-    unsigned int var2_addr = curhexs_merge();
+    unsigned int var2_addr = merge();
     exec_ptr += 4;
     logger("Copy(0x%08x,0x%08x)\n",var1_addr,var2_addr);
 
@@ -395,7 +378,7 @@ void copy(){
 }
 
 void _goto(){
-    unsigned int addr_ptr = curhexs_merge();
+    unsigned int addr_ptr = merge();
     logger("Goto(0x%08x)\n",addr_ptr);
 
     exec_ptr = virt_mem[addr_ptr] - 1;
@@ -403,7 +386,7 @@ void _goto(){
 }
 
 void geta(){
-    unsigned int addr_ptr = curhexs_merge();
+    unsigned int addr_ptr = merge();
     exec_ptr += 4;
     logger("Geta(0x%08x)\n",addr_ptr);
 
@@ -412,11 +395,11 @@ void geta(){
 }
 
 void more(){
-    unsigned int val1_addr = curhexs_merge();
+    unsigned int val1_addr = merge();
     exec_ptr += 4;
-    unsigned int val2_addr = curhexs_merge();
+    unsigned int val2_addr = merge();
     exec_ptr += 4;
-    unsigned int addr_ptr = curhexs_merge();
+    unsigned int addr_ptr = merge();
     exec_ptr += 4;
     logger("0x%08x > 0x%08x -> 0x%08x\n",val1_addr,val2_addr,addr_ptr);
 
@@ -429,11 +412,11 @@ void more(){
 }
 
 void less(){
-    unsigned int val1_addr = curhexs_merge();
+    unsigned int val1_addr = merge();
     exec_ptr += 4;
-    unsigned int val2_addr = curhexs_merge();
+    unsigned int val2_addr = merge();
     exec_ptr += 4;
-    unsigned int addr_ptr = curhexs_merge();
+    unsigned int addr_ptr = merge();
     exec_ptr += 4;
     logger("0x%08x < 0x%08x -> 0x%08x\n",val1_addr,val2_addr,addr_ptr);
 
@@ -446,11 +429,11 @@ void less(){
 }
 
 void equa(){
-    unsigned int val1_addr = curhexs_merge();
+    unsigned int val1_addr = merge();
     exec_ptr += 4;
-    unsigned int val2_addr = curhexs_merge();
+    unsigned int val2_addr = merge();
     exec_ptr += 4;
-    unsigned int addr_ptr = curhexs_merge();
+    unsigned int addr_ptr = merge();
     exec_ptr += 4;
     logger("0x%08x = 0x%08x -> 0x%08x\n",val1_addr,val2_addr,addr_ptr);
 
@@ -463,9 +446,9 @@ void equa(){
 }
 
 void lm(){
-    unsigned int val1_addr = curhexs_merge();
+    unsigned int val1_addr = merge();
     exec_ptr += 4;
-    unsigned int count_addr = curhexs_merge();
+    unsigned int count_addr = merge();
     exec_ptr += 4;
     unsigned int val1 = virt_mem[val1_addr];
 
@@ -478,9 +461,9 @@ void lm(){
 }
 
 void rm(){
-    unsigned int val1_addr = curhexs_merge();
+    unsigned int val1_addr = merge();
     exec_ptr += 4;
-    unsigned int count_addr = curhexs_merge();
+    unsigned int count_addr = merge();
     exec_ptr += 4;
     unsigned int val1 = virt_mem[val1_addr];
 
@@ -495,7 +478,7 @@ void rm(){
 // IO类
 
 void _putc(){
-    unsigned int char_ptr = curhexs_merge();
+    unsigned int char_ptr = merge();
     exec_ptr += 4;
     logger("Putc(0x%08x)\n",char_ptr);
     unsigned int char_addr = virt_mem[char_ptr];
@@ -505,7 +488,7 @@ void _putc(){
 }
 
 void putn(){
-    unsigned int n_ptr = curhexs_merge();
+    unsigned int n_ptr = merge();
     exec_ptr += 4;
     logger("Putn(0x%08x)\n",n_ptr);
     unsigned int n_addr = virt_mem[n_ptr];
@@ -515,7 +498,7 @@ void putn(){
 }
 
 void puth(){
-    unsigned int hex_ptr = curhexs_merge();
+    unsigned int hex_ptr = merge();
     exec_ptr += 4;
     logger("Putn(0x%08x)\n",hex_ptr);
     unsigned int hex_addr = virt_mem[hex_ptr];
@@ -525,7 +508,7 @@ void puth(){
 }
 
 void _getc(){
-    unsigned int char_addr = curhexs_merge();
+    unsigned int char_addr = merge();
     exec_ptr += 4;
     logger("Getc(0x%08x)\n",char_addr);
 
@@ -536,7 +519,7 @@ void _getc(){
 }
 
 void getn(){
-    unsigned int num_addr = curhexs_merge();
+    unsigned int num_addr = merge();
     exec_ptr += 4;
     logger("Getn(0x%08x)\n",num_addr);
     int num=0;
@@ -553,7 +536,7 @@ void getn(){
 }
 
 void geth(){
-    unsigned int hex_addr = curhexs_merge();
+    unsigned int hex_addr = merge();
     exec_ptr += 4;
     logger("Geth(0x%08x)\n",hex_addr);
     int hex=0x00;
@@ -572,9 +555,9 @@ void geth(){
 // 位运算类
 
 void and(){
-    unsigned int n1_addr = curhexs_merge();
+    unsigned int n1_addr = merge();
     exec_ptr += 4;
-    unsigned int n2_addr = curhexs_merge();
+    unsigned int n2_addr = merge();
     exec_ptr += 4;
     logger("0x%08x & 0x%08x)\n",n1_addr,n2_addr);
     virt_mem[n1_addr]&=virt_mem[n2_addr];
@@ -582,9 +565,9 @@ void and(){
 }
 
 void or(){
-    unsigned int n1_addr = curhexs_merge();
+    unsigned int n1_addr = merge();
     exec_ptr += 4;
-    unsigned int n2_addr = curhexs_merge();
+    unsigned int n2_addr = merge();
     exec_ptr += 4;
     logger("0x%08x | 0x%08x)\n",n1_addr,n2_addr);
     virt_mem[n1_addr]|=virt_mem[n2_addr];
@@ -592,9 +575,9 @@ void or(){
 }
 
 void xor(){
-    unsigned int n1_addr = curhexs_merge();
+    unsigned int n1_addr = merge();
     exec_ptr += 4;
-    unsigned int n2_addr = curhexs_merge();
+    unsigned int n2_addr = merge();
     exec_ptr += 4;
     logger("0x%08x ^ 0x%08x)\n",n1_addr,n2_addr);
     virt_mem[n1_addr]^=virt_mem[n2_addr];
@@ -602,7 +585,7 @@ void xor(){
 }
 
 void not(){
-    unsigned int n_addr = curhexs_merge();
+    unsigned int n_addr = merge();
     exec_ptr += 4;
     logger("~ 0x%08x\n",n_addr);
     virt_mem[n_addr]=~virt_mem[n_addr];
@@ -610,9 +593,9 @@ void not(){
 }
 
 void shl(){
-    unsigned int n_addr = curhexs_merge();
+    unsigned int n_addr = merge();
     exec_ptr += 4;
-    unsigned int count_addr = curhexs_merge();
+    unsigned int count_addr = merge();
     exec_ptr += 4;
     logger("0x%08x << 0x%08x\n",n_addr,count_addr);
     virt_mem[n_addr]<<=virt_mem[count_addr];
@@ -620,18 +603,18 @@ void shl(){
 }
 
 void shr(){
-    unsigned int n_addr = curhexs_merge();
+    unsigned int n_addr = merge();
     exec_ptr += 4;
-    unsigned int count_addr = curhexs_merge();
+    unsigned int count_addr = merge();
     exec_ptr += 4;
     logger("0x%08x >> 0x%08x\n",n_addr,count_addr);
     virt_mem[n_addr]>>=virt_mem[count_addr];
     logger("Res=0x%08x\n",virt_mem[n_addr]);
 }
 
-int cpu_clock = 20; //20hz
+int cpu_clock;
 
-#define cur_com virt_mem[exec_ptr]
+#define command virt_mem[exec_ptr]
 
 void execute(){
     unsigned int run_per_sec = 1000000 / cpu_clock  > 0 ? 1000000 / cpu_clock : 0;
@@ -641,7 +624,7 @@ void execute(){
         exec_count++;
         cpu_clock == -1?:usleep(run_per_sec);
         
-        if(cur_com == STORAGE){
+        if(command == STORAGE){
             logger("Storage command found\n");
             execute_mode = execute_mode!=EXECUTE_STORAGE?EXECUTE_STORAGE:EXECUTE_NORMAL;
             logger("Executed count: %d\n\n", exec_count);
@@ -649,12 +632,12 @@ void execute(){
         }
 
         if(execute_mode == EXECUTE_STORAGE){
-            logger("Skipped %08x\n",cur_com);
+            logger("Skipped %08x\n",command);
             logger("Executed count: %d\n\n", exec_count);
             continue;
         }
 
-        switch (cur_com)
+        switch (command)
         {
         case ADD:
             add();
@@ -780,7 +763,7 @@ void execute(){
             continue;
 
         default:
-            logger("Unknown %08x\n", cur_com);
+            logger("Unknown %08x\n", command);
             break;
         }
         logger("Executed count: %d\n\n", exec_count);
@@ -789,26 +772,26 @@ void execute(){
 
 
 int main(int argc, char** argv){
+    Option options = parse_options(argc, argv);
+    if(options.exit){
+        return 0;
+    };
     if(init_virt_memory()){
         printf("Could not allocate memory\n");
         return 1;
     }
-    struct OptData opt_data = parse_options(argc, argv);
-    if(opt_data.exit){
-        return 0;
-    };
-    char* input_filename = opt_data.input_file;
-    if(!opt_data.non_log_file){
-        log_file_name = opt_data.log_file;
+    char* input_filename = options.input_file;
+    if(!options.non_log_file){
+        log_file_name = options.log_file;
         log_file = fopen(log_file_name,"w");
         if(log_file == NULL){
             printf("Failed to open log file: %s\n",log_file_name);
-            exit(1);
+            return 1;
         }
     }
     logger("input file: %s\n",input_filename);
-    read_coms_to_mem(input_filename);
-    cpu_clock = opt_data.cpu_clock;
+    readbin(input_filename);
+    cpu_clock = options.cpu_clock;
     execute();
     free(virt_mem);
     return 0;

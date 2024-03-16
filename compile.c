@@ -1,13 +1,11 @@
 #include <stdio.h>
-#include <sys/stat.h>
-//#include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <ctype.h>
 
 const char* OS = "linux";
 const char* ARCH = "amd64";
-const char* VERSION = "a0.0.2_debug"; 
+const char* VERSION = "a0.0.3_debug"; 
 
 void print_help(char** argv){
     printf("XASM Compile %s Community Version (%s_%s)\n",OS,VERSION,ARCH);
@@ -18,35 +16,14 @@ void print_help(char** argv){
     printf("  -o, --output FILE\tset output file\n");
 }
 
-// //字符串哈希
-// unsigned int hash(const char* str){
-//     unsigned int hash = 5381;
-//     for (int index=0;index < strlen(str);index++)
-//         hash = ((hash << 5) + hash) + str[index]; /* hash * 33 + c */
-//     return hash;
-// }
-
-struct OptData //存储从命令行参数中得到的各项数据与一些获取到的flag
+typedef struct //存储从命令行参数中得到的各项数据与一些获取到的flag
 {
-    char* input_filepath;
-    char* output_filepath;
+    char* input_fpath;
+    char* output_fpath;
     int exit;
-};
+} Option;
 
 int str_eq(char* s1,char* s2){
-    // return strcmp(s1,s2) == 0;
-
-    // int s1_len = strlen(s1);
-    // int s2_len = strlen(s2);
-    // if(s1_len!=s2_len){
-    //     return 0;
-    // }
-    // for(int index=0;index < s1_len;index++)
-    //     if(s1[index] != s2[index])
-    //         return 0;
-
-    // return 1;
-    
     for(int index=0;;index++){
         if(s1[index] != s2[index]){
             return 0;
@@ -76,189 +53,167 @@ int logger(const char* __fmt,...){
     va_end(args);
 }
 
-struct OptData loop_parse_options(int argc,char** argv){
-    struct OptData option_data;
+Option loop_parse_options(int argc,char** argv){
+    Option option;
     int has_output_file = 0;
     int has_input_file = 0;
-    option_data.input_filepath = "main.asm";
-    option_data.output_filepath = "main";
-    option_data.exit = 0;
+    option.input_fpath = "main.asm";
+    option.output_fpath = "main";
+    option.exit = 0;
+
     for(int index=1;index < argc;index++){
         char* cur_arg = argv[index];
         
         if(str_eq(cur_arg,"-h") || str_eq(cur_arg,"--help")){
             print_help(argv);
-            option_data.exit = 1;
+            option.exit = 1;
 
             break;
         }else if(str_eq(cur_arg,"-v") || str_eq(cur_arg,"--version")){
             printf("%s\n",VERSION);
-            option_data.exit = 1;
+            option.exit = 1;
 
             break;
         }else if(str_eq(cur_arg,"-o") || str_eq(cur_arg,"--output")){
             if(index+1 < argc && argv[index+1][0] != '-'){
                 has_output_file = 1;
-                option_data.output_filepath = argv[index+1];
+                option.output_fpath = argv[index+1];
                 index++;
 
                 continue;
             }else{
                 printf("Missing output file after '%s'\n",cur_arg);
-                option_data.exit = 1;
+                option.exit = 1;
 
                 break;
             }
         }else if(cur_arg[0] == '-'){
             printf("Unknown option: '%s'\n",cur_arg);
-            option_data.exit = 1;
+            option.exit = 1;
 
             break;
         }else{
             has_input_file = 1;
-            option_data.input_filepath = cur_arg;
+            option.input_fpath = cur_arg;
 
             continue;
         }
     }
-    return option_data;
+    return option;
 }
 
-struct OptData parse_options(int argc, char** argv){
-    struct OptData option_data;
+Option parse_options(int argc, char** argv){
+    Option option;
 
-    if(argc == 1){ //没有参数
+    if(argc == 1){
         print_help(argv);
-        option_data.exit = 1;
-    }else{ //有参数
-        option_data = loop_parse_options(argc,argv);
+        option.exit = 1;
     }
     
-    return option_data;
+    return loop_parse_options(argc,argv);
 }
 
-size_t get_filesize(char* filename){
-    struct stat stat_buf;
-    stat(filename,&stat_buf);
-    size_t filesize = stat_buf.st_size;
-    return filesize;
-}
-
-struct CommandHex
-{
-    char hex;
-    char valid;
-    //char* comment;
-};
-
-struct CommandHex parse_command_to_hex(char* command){
-    // printf("command:%s\n",command);
-    struct CommandHex command_hex;
-    command_hex.valid = 1;
-    //command_hex.comment = NULL;
-    char hex;
-    char* endptr;
-    char tmp_hex = strtol(command,&endptr,16);
-    if(str_eqi(command,"add")){
-        hex = 0x01;
-    }else if(str_eqi(command,"sub")){
-        hex = 0x02;
-    }else if(str_eqi(command,"xadd")){
-        hex = 0x03;
-    }else if(str_eqi(command,"xsub")){
-        hex = 0x04;
-
-    }else if(str_eqi(command,"and")){
-        hex = 0x11;
-    }else if(str_eqi(command,"or")){
-        hex = 0x12;
-    }else if(str_eqi(command,"not")){
-        hex = 0x13;
-
-    }else if(str_eqi(command,"mov")){
-        hex = 0x21;
-    }else if(str_eqi(command,"copy")){
-        hex = 0x22;
-    }else if(str_eqi(command,"goto")){
-        hex = 0x23;
-    }else if(str_eqi(command,"geta")){
-        hex = 0x24;
-    }else if(str_eqi(command,">")){
-        hex = 0x25;
-    }else if(str_eqi(command,"<")){
-        hex = 0x26;
-    }else if(str_eqi(command,"=")){
-        hex = 0x27;
-    }else if(str_eqi(command,"lm")){
-        hex = 0x28;
-    }else if(str_eqi(command,"rm")){
-        hex = 0x29;
-    }else if(str_eqi(command,"exit")){
-        hex = 0x2a;
-        
-    }else if(str_eqi(command,"putc")){
-        hex = 0x31;
-    }else if(str_eqi(command,"putn")){
-        hex = 0x32;
-    }else if(str_eqi(command,"puth")){
-        hex = 0x33;
-    }else if(str_eqi(command,"getc")){
-        hex = 0x34;
-    }else if(str_eqi(command,"getn")){
-        hex = 0x35;
-    }else if(str_eqi(command,"geth")){
-        hex = 0x36;
-
-    }else if(str_eqi(command,"&")){
-        hex = 0x41;
-    }else if(str_eqi(command,"|")){
-        hex = 0x42;
-    }else if(str_eqi(command,"^")){
-        hex = 0x43;
-    }else if(str_eqi(command,"~")){
-        hex = 0x44;
-    }else if(str_eqi(command,"<<")){
-        hex = 0x45;
-    }else if(str_eqi(command,">>")){
-        hex = 0x46;
-    }else if(*endptr == '\0'){
-        hex = tmp_hex;
-    }else{
-        command_hex.valid = 0;
-        return command_hex;
-    }
-    command_hex.hex = hex;
-    return command_hex;
-}
-
-enum CommandKind {
+typedef enum {
     NORMAL,
     STRING,
     COMMENT,
-};
+}CommandKind;
 
-enum StringKind {
+typedef struct {
+    CommandKind kind;
+    int length;
+    char hex;
+    char valid;
+}Command;
+
+Command parse_command(char* command_str,Command command){
+    command.valid = 1;
+    char hex;
+
+    if(str_eqi(command_str,"add")){
+        hex = 0x01;
+    }else if(str_eqi(command_str,"sub")){
+        hex = 0x02;
+    }else if(str_eqi(command_str,"xadd")){
+        hex = 0x03;
+    }else if(str_eqi(command_str,"xsub")){
+        hex = 0x04;
+    }else if(str_eqi(command_str,"and")){
+        hex = 0x11;
+    }else if(str_eqi(command_str,"or")){
+        hex = 0x12;
+    }else if(str_eqi(command_str,"not")){
+        hex = 0x13;
+    }else if(str_eqi(command_str,"mov")){
+        hex = 0x21;
+    }else if(str_eqi(command_str,"copy")){
+        hex = 0x22;
+    }else if(str_eqi(command_str,"goto")){
+        hex = 0x23;
+    }else if(str_eqi(command_str,"geta")){
+        hex = 0x24;
+    }else if(str_eqi(command_str,">")){
+        hex = 0x25;
+    }else if(str_eqi(command_str,"<")){
+        hex = 0x26;
+    }else if(str_eqi(command_str,"=")){
+        hex = 0x27;
+    }else if(str_eqi(command_str,"lm")){
+        hex = 0x28;
+    }else if(str_eqi(command_str,"rm")){
+        hex = 0x29;
+    }else if(str_eqi(command_str,"exit")){
+        hex = 0x2a;
+    }else if(str_eqi(command_str,"putc")){
+        hex = 0x31;
+    }else if(str_eqi(command_str,"putn")){
+        hex = 0x32;
+    }else if(str_eqi(command_str,"puth")){
+        hex = 0x33;
+    }else if(str_eqi(command_str,"getc")){
+        hex = 0x34;
+    }else if(str_eqi(command_str,"getn")){
+        hex = 0x35;
+    }else if(str_eqi(command_str,"geth")){
+        hex = 0x36;
+    }else if(str_eqi(command_str,"&")){
+        hex = 0x41;
+    }else if(str_eqi(command_str,"|")){
+        hex = 0x42;
+    }else if(str_eqi(command_str,"^")){
+        hex = 0x43;
+    }else if(str_eqi(command_str,"~")){
+        hex = 0x44;
+    }else if(str_eqi(command_str,"<<")){
+        hex = 0x45;
+    }else if(str_eqi(command_str,">>")){
+        hex = 0x46;
+    }else if(str_eqi(command_str,"sto")){
+        hex = 0xff;
+    }else if(!sscanf(command_str,"%x",&hex)){
+        command.valid = 0;
+        return command;
+    }
+    command.hex = hex;
+    return command;
+}
+
+typedef enum {
     STRING_SQM,
     STRING_DQM,
-};
+}StringKind;
 
-struct Command {
-    enum CommandKind kind;
-    int length;
-};
-
-struct Command read_command(FILE* file_ptr,char* readbuf){
-    struct Command command;
-    enum CommandKind kind = NORMAL;
-    int readcount = 0;
+Command read_command(FILE* file_ptr,char* readbuf){
+    Command command;
+    CommandKind kind = NORMAL;
+    int readindex = 0;
     int continue_flag=1;
-    enum StringKind string_kind = STRING_SQM;
-    for(;continue_flag;readcount++)
+    StringKind string_kind = STRING_SQM;
+    for(;continue_flag;readindex++)
     {
-
-        readbuf[readcount] = fgetc(file_ptr);
+        readbuf[readindex] = fgetc(file_ptr);
         
-        if(readbuf[readcount] == EOF){
+        if(readbuf[readindex] == EOF){
             break;
         }
 
@@ -268,16 +223,16 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
             switch (string_kind)
             {
             case STRING_SQM:
-                switch (readbuf[readcount])
+                switch (readbuf[readindex])
                 {
                 case '\'':
                     continue_flag = 0;
                     break;
                 
                 case '\\':
-                    readcount++;
-                    readbuf[readcount] = fgetc(file_ptr);
-                    switch (readbuf[readcount])
+                    readindex++;
+                    readbuf[readindex] = fgetc(file_ptr);
+                    switch (readbuf[readindex])
                     {
                     case EOF:
                         continue_flag = 0;
@@ -285,36 +240,31 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
 
 
                     case 'n':
-                        readcount--;
-                        readbuf[readcount] = '\n';
+                        readindex--;
+                        readbuf[readindex] = '\n';
                         break;
 
                     case 't':
-                        readcount--;
-                        readbuf[readcount] = '\t';
+                        readindex--;
+                        readbuf[readindex] = '\t';
                         break;
 
                     case 'r':
-                        readcount--;
-                        readbuf[readcount] = '\r';
+                        readindex--;
+                        readbuf[readindex] = '\r';
                         break;
 
                     case 'x':
-                        readcount--;
-                        logger("\\x\n");
-                        fscanf(file_ptr, "%02hhx", &readbuf[readcount]);
-                        //readbuf[readcount] = '\x48';
+                        readindex--;
+                        fscanf(file_ptr, "%02hhx", &readbuf[readindex]);
                         break;
 
                     default:
-                        readcount--;
-                        readbuf[readcount] = readbuf[readcount+1];
+                        readindex--;
+                        readbuf[readindex] = readbuf[readindex+1];
                         break;
                     }
                     break;
-                    // if(readbuf[readcount] == EOF){
-                    //     break;
-                    // }
                 default:
                     continue;
                     break;
@@ -322,53 +272,47 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
                 break;
 
             case STRING_DQM:
-                switch (readbuf[readcount])
+                switch (readbuf[readindex])
                 {
                 case '"':
                     continue_flag = 0;
                     break;
                 
                 case '\\':
-                    readcount++;
-                    readbuf[readcount] = fgetc(file_ptr);
-                    switch (readbuf[readcount])
+                    readindex++;
+                    readbuf[readindex] = fgetc(file_ptr);
+                    switch (readbuf[readindex])
                     {
                     case EOF:
                         continue_flag = 0;
                         break;
 
-
                     case 'n':
-                        readcount--;
-                        readbuf[readcount] = '\n';
+                        readindex--;
+                        readbuf[readindex] = '\n';
                         break;
 
                     case 't':
-                        readcount--;
-                        readbuf[readcount] = '\t';
+                        readindex--;
+                        readbuf[readindex] = '\t';
                         break;
 
                     case 'r':
-                        readcount--;
-                        readbuf[readcount] = '\r';
+                        readindex--;
+                        readbuf[readindex] = '\r';
                         break;
 
                     case 'x':
-                        readcount--;
-                        logger("\\x\n");
-                        fscanf(file_ptr, "%02hhx", &readbuf[readcount]);
-                        //readbuf[readcount] = '\x48';
+                        readindex--;
+                        fscanf(file_ptr, "%02hhx", &readbuf[readindex]);
                         break;
 
                     default:
-                        readcount--;
-                        readbuf[readcount] = readbuf[readcount+1];
+                        readindex--;
+                        readbuf[readindex] = readbuf[readindex+1];
                         break;
                     }
                     break;
-                    // if(readbuf[readcount] == EOF){
-                    //     break;
-                    // }
                 default:
                     continue;
                     break;
@@ -378,7 +322,7 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
             break;
         
         case COMMENT:
-            switch (readbuf[readcount])
+            switch (readbuf[readindex])
             {
             case '\n':
                 continue_flag=0;
@@ -390,7 +334,7 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
             }
             break;
         case NORMAL:
-            switch (readbuf[readcount])
+            switch (readbuf[readindex])
             {
             case ' ':
                 continue_flag = 0;
@@ -407,19 +351,19 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
             case '\'':
                 string_kind = STRING_SQM;
                 kind = STRING;
-                readcount--;
+                readindex--;
                 break;
 
             case '"':
                 string_kind = STRING_DQM;
                 kind = STRING;
-                readcount--;
+                readindex--;
                 break;
 
             case '/':
-                readcount++;
-                readbuf[readcount] = fgetc(file_ptr);
-                switch (readbuf[readcount])
+                readindex++;
+                readbuf[readindex] = fgetc(file_ptr);
+                switch (readbuf[readindex])
                 {
                 case EOF:
                     continue_flag = 0;
@@ -434,6 +378,28 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
                 }
                 break;
 
+            case '-':
+                readindex++;
+                readbuf[readindex] = fgetc(file_ptr);
+                switch (readbuf[readindex])
+                {
+                case EOF:
+                    continue_flag = 0;
+                    break;
+                
+                case '-':
+                    kind = COMMENT;
+                    break;
+
+                default:
+                    break;
+                }
+                break;
+
+            case '#':
+                kind = COMMENT;
+                break;
+
             default:
                 continue;
                 break;
@@ -443,50 +409,46 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
             break;
         }
         if(!continue_flag){
-            //readcount--;
             break;
         }
     }
-    if(readbuf[readcount] == EOF && readcount == 0){
-        readbuf[readcount] = '\0';
+    if(readbuf[readindex] == EOF && readindex == 0){
+        readbuf[readindex] = '\0';
         command.length = EOF;
         command.kind = kind;
         return command;
     }
-    command.length = readcount;
+    command.length = readindex;
     command.kind = kind;
-    readbuf[readcount] = '\0';
+    readbuf[readindex] = '\0';
     return command;
 }
 
-void compile_file(char* input_filepath,char* output_filepath){
-    FILE* input_fptr = fopen(input_filepath,"r");
-    FILE* output_filepointer = fopen(output_filepath,"w");
+#define MAX_CODE_UNIT_LENGTH 0xffffffff
 
-    size_t input_filesize = get_filesize(input_filepath);
-    char* readbuffer = (char*)malloc(input_filesize);
+void compile_file(char* input_fpath,char* output_fpath){
+    FILE* input_fptr = fopen(input_fpath,"r");
+    FILE* output_fptr = fopen(output_fpath,"w");
+
+    char* readbuffer = (char*)malloc(sizeof(char)*MAX_CODE_UNIT_LENGTH);
 
     if(input_fptr == NULL){
-        printf("Could not open source file '%s'\n",input_filepath);
+        printf("Could not open source file '%s'\n",input_fpath);
         return;
     }
-    if(output_filepointer == NULL)
+    if(output_fptr == NULL)
     {
-        printf("Could not create output file '%s'\n",output_filepath);
+        printf("Could not create output file '%s'\n",output_fpath);
         return;
     }
-    enum CommandKind kind = NORMAL;
-    struct Command command;
-    int comp_size=0;
-    int code_uc=0;
-    while((command = read_command(input_fptr,readbuffer)).length != EOF){
-        // printf("kind: %d\n",command.kind);
 
-        if(readbuffer[0] == '\0'){
+    Command command;
+    while((command = read_command(input_fptr,readbuffer)).length != EOF){
+        if(command.length == 0){
             continue;
         }
+
         logger("\nreader position: %zu\n",ftell(input_fptr));
-        logger("code unit count:%d\n",++code_uc);
 
         if(command.kind == COMMENT){
             logger("comment: %s\n",readbuffer);
@@ -495,40 +457,35 @@ void compile_file(char* input_filepath,char* output_filepath){
 
         if(command.kind == STRING){
             logger("writebuffer: %s\n",readbuffer);
-            fputs(readbuffer,output_filepointer);
-            fflush(output_filepointer);
-            logger("compiled file size:%d\n",comp_size+=command.length);
+            fputs(readbuffer,output_fptr);
+            fflush(output_fptr);
             continue;
         }
 
         logger("readbuffer: %s\n",readbuffer);
 
-        struct CommandHex command_hex;
-        if((command_hex = parse_command_to_hex(readbuffer)).valid){
-            logger("writebuffer: %x\n",command_hex.hex);
-            fputc(command_hex.hex,output_filepointer);
-            fflush(output_filepointer);
-            logger("compiled file size:%d\n",++comp_size);
+        if((command = parse_command(readbuffer,command)).valid){
+            logger("writebuffer: %x\n",command.hex);
+            fputc(command.hex,output_fptr);
+            fflush(output_fptr);
         }else{
             logger("invalid command: %s\n",readbuffer);
         }
     }
-    logger("\nsource filesize: %zu\n",input_filesize);
 
     fclose(input_fptr);
-    fclose(output_filepointer);
-    
+    fclose(output_fptr);
 }
 
 int main(int argc, char **argv){
-    struct OptData options_data = parse_options(argc,argv);
-    if(options_data.exit == 1){
+    Option options = parse_options(argc,argv);
+    if(options.exit == 1){
         return 0;
     }
-    char* input_filepath = options_data.input_filepath;
-    char* output_filepath = options_data.output_filepath;
-    logger("input filepath: %s\n",input_filepath);
-    logger("output filepath: %s\n",output_filepath);
-    compile_file(input_filepath,output_filepath);
+    char* input_fpath = options.input_fpath;
+    char* output_fpath = options.output_fpath;
+    logger("input filepath: %s\n",input_fpath);
+    logger("output filepath: %s\n",output_fpath);
+    compile_file(input_fpath,output_fpath);
     return 0;
 }

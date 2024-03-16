@@ -1,3 +1,3 @@
 COMPILER=gcc
-$COMPILER compile.c -o builds/compile -Ofast
-$COMPILER xasm.c -o builds/xasm -Ofast
+$COMPILER compile.c -o builds/compile -Oz
+$COMPILER xasm.c -o builds/xasm -Oz

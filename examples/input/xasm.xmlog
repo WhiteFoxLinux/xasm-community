@@ -1,0 +1,894 @@
+input file: input
+program filesize: 188
+Storage command found
+Executed count: 1
+
+Skipped 00000000
+Executed count: 2
+
+Skipped 000000fe
+Executed count: 3
+
+Skipped 00000000
+Executed count: 4
+
+Storage command found
+Executed count: 5
+
+Mov(0x0000f000,0x0000000e)
+0x0000f000 => 0x0000000e
+Executed count: 6
+
+Mov(0x0000f002,0x00000001)
+0x0000f002 => 0x00000001
+Executed count: 7
+
+Mov(0x0000f001,0x00000033)
+0x0000f001 => 0x00000033
+Executed count: 8
+
+Geta(0x00000001)
+Saved 0x00000025 => 0x00000001
+Executed count: 9
+
+Add(0x00000001,0x0000f000)
+Res=0x00000033
+Executed count: 10
+
+Goto(0x0000f001)
+Jump to 0x00000033
+Executed count: 11
+
+Mov(0x0000ff00,0x0000f004)
+0x0000ff00 => 0x0000f004
+Executed count: 12
+
+Mov(0x0000ff01,0x0000000a)
+0x0000ff01 => 0x0000000a
+Executed count: 13
+
+Mov(0x0000ff02,0x00000025)
+0x0000ff02 => 0x00000025
+Executed count: 14
+
+Mov(0x0000ff03,0x0000007f)
+0x0000ff03 => 0x0000007f
+Executed count: 15
+
+Mov(0x0000ff04,0x000000b6)
+0x0000ff04 => 0x000000b6
+Executed count: 16
+
+Geta(0x0000f003)
+Saved 0x00000065 => 0x0000f003
+Executed count: 17
+
+Getc(0x0000f004)
+Read 0x73
+Executed count: 18
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 19
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 20
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 21
+
+Putc(0x0000ff00)
+Printed 0x73
+Executed count: 22
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x000000fe
+Executed count: 23
+
+Copy(0x000000fe,0x0000f004)
+Copied 0x000000fe => 0x00000073
+Executed count: 24
+
+Add(0x00000002,0x0000f002)
+Res=0x000000ff
+Executed count: 25
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 26
+
+Getc(0x0000f004)
+Read 0x64
+Executed count: 27
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 28
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 29
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 30
+
+Putc(0x0000ff00)
+Printed 0x64
+Executed count: 31
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x000000ff
+Executed count: 32
+
+Copy(0x000000ff,0x0000f004)
+Copied 0x000000ff => 0x00000064
+Executed count: 33
+
+Add(0x00000002,0x0000f002)
+Res=0x00000100
+Executed count: 34
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 35
+
+Getc(0x0000f004)
+Read 0x61
+Executed count: 36
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 37
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 38
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 39
+
+Putc(0x0000ff00)
+Printed 0x61
+Executed count: 40
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000100
+Executed count: 41
+
+Copy(0x00000100,0x0000f004)
+Copied 0x00000100 => 0x00000061
+Executed count: 42
+
+Add(0x00000002,0x0000f002)
+Res=0x00000101
+Executed count: 43
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 44
+
+Getc(0x0000f004)
+Read 0x73
+Executed count: 45
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 46
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 47
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 48
+
+Putc(0x0000ff00)
+Printed 0x73
+Executed count: 49
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000101
+Executed count: 50
+
+Copy(0x00000101,0x0000f004)
+Copied 0x00000101 => 0x00000073
+Executed count: 51
+
+Add(0x00000002,0x0000f002)
+Res=0x00000102
+Executed count: 52
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 53
+
+Getc(0x0000f004)
+Read 0x64
+Executed count: 54
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 55
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 56
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 57
+
+Putc(0x0000ff00)
+Printed 0x64
+Executed count: 58
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000102
+Executed count: 59
+
+Copy(0x00000102,0x0000f004)
+Copied 0x00000102 => 0x00000064
+Executed count: 60
+
+Add(0x00000002,0x0000f002)
+Res=0x00000103
+Executed count: 61
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 62
+
+Getc(0x0000f004)
+Read 0x61
+Executed count: 63
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 64
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 65
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 66
+
+Putc(0x0000ff00)
+Printed 0x61
+Executed count: 67
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000103
+Executed count: 68
+
+Copy(0x00000103,0x0000f004)
+Copied 0x00000103 => 0x00000061
+Executed count: 69
+
+Add(0x00000002,0x0000f002)
+Res=0x00000104
+Executed count: 70
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 71
+
+Getc(0x0000f004)
+Read 0x73
+Executed count: 72
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 73
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 74
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 75
+
+Putc(0x0000ff00)
+Printed 0x73
+Executed count: 76
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000104
+Executed count: 77
+
+Copy(0x00000104,0x0000f004)
+Copied 0x00000104 => 0x00000073
+Executed count: 78
+
+Add(0x00000002,0x0000f002)
+Res=0x00000105
+Executed count: 79
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 80
+
+Getc(0x0000f004)
+Read 0x64
+Executed count: 81
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 82
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 83
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 84
+
+Putc(0x0000ff00)
+Printed 0x64
+Executed count: 85
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000105
+Executed count: 86
+
+Copy(0x00000105,0x0000f004)
+Copied 0x00000105 => 0x00000064
+Executed count: 87
+
+Add(0x00000002,0x0000f002)
+Res=0x00000106
+Executed count: 88
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 89
+
+Getc(0x0000f004)
+Read 0x61
+Executed count: 90
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 91
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 92
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 93
+
+Putc(0x0000ff00)
+Printed 0x61
+Executed count: 94
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000106
+Executed count: 95
+
+Copy(0x00000106,0x0000f004)
+Copied 0x00000106 => 0x00000061
+Executed count: 96
+
+Add(0x00000002,0x0000f002)
+Res=0x00000107
+Executed count: 97
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 98
+
+Getc(0x0000f004)
+Read 0x73
+Executed count: 99
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 100
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 101
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 102
+
+Putc(0x0000ff00)
+Printed 0x73
+Executed count: 103
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000107
+Executed count: 104
+
+Copy(0x00000107,0x0000f004)
+Copied 0x00000107 => 0x00000073
+Executed count: 105
+
+Add(0x00000002,0x0000f002)
+Res=0x00000108
+Executed count: 106
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 107
+
+Getc(0x0000f004)
+Read 0x64
+Executed count: 108
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 109
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 110
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 111
+
+Putc(0x0000ff00)
+Printed 0x64
+Executed count: 112
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000108
+Executed count: 113
+
+Copy(0x00000108,0x0000f004)
+Copied 0x00000108 => 0x00000064
+Executed count: 114
+
+Add(0x00000002,0x0000f002)
+Res=0x00000109
+Executed count: 115
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 116
+
+Getc(0x0000f004)
+Read 0x73
+Executed count: 117
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 118
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 119
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 120
+
+Putc(0x0000ff00)
+Printed 0x73
+Executed count: 121
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000109
+Executed count: 122
+
+Copy(0x00000109,0x0000f004)
+Copied 0x00000109 => 0x00000073
+Executed count: 123
+
+Add(0x00000002,0x0000f002)
+Res=0x0000010a
+Executed count: 124
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 125
+
+Getc(0x0000f004)
+Read 0x61
+Executed count: 126
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 127
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 128
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 129
+
+Putc(0x0000ff00)
+Printed 0x61
+Executed count: 130
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x0000010a
+Executed count: 131
+
+Copy(0x0000010a,0x0000f004)
+Copied 0x0000010a => 0x00000061
+Executed count: 132
+
+Add(0x00000002,0x0000f002)
+Res=0x0000010b
+Executed count: 133
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 134
+
+Getc(0x0000f004)
+Read 0x1b
+Executed count: 135
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 136
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 137
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 138
+
+Putc(0x0000ff00)
+Printed 0x1b
+Executed count: 139
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x0000010b
+Executed count: 140
+
+Copy(0x0000010b,0x0000f004)
+Copied 0x0000010b => 0x0000001b
+Executed count: 141
+
+Add(0x00000002,0x0000f002)
+Res=0x0000010c
+Executed count: 142
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 143
+
+Getc(0x0000f004)
+Read 0x5b
+Executed count: 144
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 145
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 146
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 147
+
+Putc(0x0000ff00)
+Printed 0x5b
+Executed count: 148
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x0000010c
+Executed count: 149
+
+Copy(0x0000010c,0x0000f004)
+Copied 0x0000010c => 0x0000005b
+Executed count: 150
+
+Add(0x00000002,0x0000f002)
+Res=0x0000010d
+Executed count: 151
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 152
+
+Getc(0x0000f004)
+Read 0x41
+Executed count: 153
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 154
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 155
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 156
+
+Putc(0x0000ff00)
+Printed 0x41
+Executed count: 157
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x0000010d
+Executed count: 158
+
+Copy(0x0000010d,0x0000f004)
+Copied 0x0000010d => 0x00000041
+Executed count: 159
+
+Add(0x00000002,0x0000f002)
+Res=0x0000010e
+Executed count: 160
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 161
+
+Getc(0x0000f004)
+Read 0x73
+Executed count: 162
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 163
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 164
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 165
+
+Putc(0x0000ff00)
+Printed 0x73
+Executed count: 166
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x0000010e
+Executed count: 167
+
+Copy(0x0000010e,0x0000f004)
+Copied 0x0000010e => 0x00000073
+Executed count: 168
+
+Add(0x00000002,0x0000f002)
+Res=0x0000010f
+Executed count: 169
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 170
+
+Getc(0x0000f004)
+Read 0x64
+Executed count: 171
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 172
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 173
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 174
+
+Putc(0x0000ff00)
+Printed 0x64
+Executed count: 175
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x0000010f
+Executed count: 176
+
+Copy(0x0000010f,0x0000f004)
+Copied 0x0000010f => 0x00000064
+Executed count: 177
+
+Add(0x00000002,0x0000f002)
+Res=0x00000110
+Executed count: 178
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 179
+
+Getc(0x0000f004)
+Read 0x61
+Executed count: 180
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 181
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 182
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 183
+
+Putc(0x0000ff00)
+Printed 0x61
+Executed count: 184
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000110
+Executed count: 185
+
+Copy(0x00000110,0x0000f004)
+Copied 0x00000110 => 0x00000061
+Executed count: 186
+
+Add(0x00000002,0x0000f002)
+Res=0x00000111
+Executed count: 187
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 188
+
+Getc(0x0000f004)
+Read 0x73
+Executed count: 189
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 190
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 191
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 192
+
+Putc(0x0000ff00)
+Printed 0x73
+Executed count: 193
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000111
+Executed count: 194
+
+Copy(0x00000111,0x0000f004)
+Copied 0x00000111 => 0x00000073
+Executed count: 195
+
+Add(0x00000002,0x0000f002)
+Res=0x00000112
+Executed count: 196
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 197
+
+Getc(0x0000f004)
+Read 0x64
+Executed count: 198
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 199
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 200
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 201
+
+Putc(0x0000ff00)
+Printed 0x64
+Executed count: 202
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000112
+Executed count: 203
+
+Copy(0x00000112,0x0000f004)
+Copied 0x00000112 => 0x00000064
+Executed count: 204
+
+Add(0x00000002,0x0000f002)
+Res=0x00000113
+Executed count: 205
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 206
+
+Getc(0x0000f004)
+Read 0x61
+Executed count: 207
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 208
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 209
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 210
+
+Putc(0x0000ff00)
+Printed 0x61
+Executed count: 211
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000113
+Executed count: 212
+
+Copy(0x00000113,0x0000f004)
+Copied 0x00000113 => 0x00000061
+Executed count: 213
+
+Add(0x00000002,0x0000f002)
+Res=0x00000114
+Executed count: 214
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 215
+
+Getc(0x0000f004)
+Read 0x73
+Executed count: 216
+
+0x0000f004 = 0x0000ff01 -> 0x0000ff04
+Continue
+Executed count: 217
+
+0x0000f004 = 0x0000ff02 -> 0x0000ff04
+Continue
+Executed count: 218
+
+0x0000f004 = 0x0000ff03 -> 0x0000ff04
+Continue
+Executed count: 219
+
+Putc(0x0000ff00)
+Printed 0x73
+Executed count: 220
+
+Copy(0x000000a3,0x00000002)
+Copied 0x000000a3 => 0x00000114
+Executed count: 221
+
+Copy(0x00000114,0x0000f004)
+Copied 0x00000114 => 0x00000073
+Executed count: 222
+
+Add(0x00000002,0x0000f002)
+Res=0x00000115
+Executed count: 223
+
+Goto(0x0000f003)
+Jump to 0x00000065
+Executed count: 224
+
+Getc(0x0000f004)
