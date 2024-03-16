@@ -36,7 +36,7 @@ void usleep(int usec)
 
 const char* OS = "linux";
 const char* ARCH = "amd64";
-const char* VERSION = "a0.0.1_debug"; 
+const char* VERSION = "a0.0.2_debug"; 
 
 void print_help(char** argv){
     printf("XASM VM %s Community Version (%s_%s)\n",VERSION,OS,ARCH);
@@ -391,7 +391,7 @@ void copy(){
     logger("Copy(0x%08x,0x%08x)\n",var1_addr,var2_addr);
 
     virt_mem[var1_addr] = virt_mem[var2_addr];
-    logger("Copied 0x%08x => 0x%08x\n",var1_addr,var2_addr);
+    logger("Copied 0x%08x => 0x%08x\n",var1_addr,virt_mem[var2_addr]);
 }
 
 void _goto(){
@@ -497,7 +497,7 @@ void rm(){
 void _putc(){
     unsigned int char_ptr = curhexs_merge();
     exec_ptr += 4;
-    logger("Putc(0x%08d)\n",char_ptr);
+    logger("Putc(0x%08x)\n",char_ptr);
     unsigned int char_addr = virt_mem[char_ptr];
     putchar(virt_mem[char_addr]);
     fflush(stdout);
@@ -507,7 +507,7 @@ void _putc(){
 void putn(){
     unsigned int n_ptr = curhexs_merge();
     exec_ptr += 4;
-    logger("Putn(0x%08d)\n",n_ptr);
+    logger("Putn(0x%08x)\n",n_ptr);
     unsigned int n_addr = virt_mem[n_ptr];
     printf("%d",virt_mem[n_addr]);
     fflush(stdout);
@@ -517,7 +517,7 @@ void putn(){
 void puth(){
     unsigned int hex_ptr = curhexs_merge();
     exec_ptr += 4;
-    logger("Putn(0x%08d)\n",hex_ptr);
+    logger("Putn(0x%08x)\n",hex_ptr);
     unsigned int hex_addr = virt_mem[hex_ptr];
     printf("%x",virt_mem[hex_addr]);
     fflush(stdout);
@@ -529,9 +529,10 @@ void _getc(){
     exec_ptr += 4;
     logger("Getc(0x%08x)\n",char_addr);
 
-    virt_mem[char_addr] = getch();
+    int ch = getch();
+    virt_mem[char_addr] = ch;
     fflush(stdin);
-    logger("Read 0x%02x\n",virt_mem[char_addr]);
+    logger("Read 0x%02x\n",ch);
 }
 
 void getn(){

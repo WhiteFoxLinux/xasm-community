@@ -7,7 +7,7 @@
 
 const char* OS = "linux";
 const char* ARCH = "amd64";
-const char* VERSION = "a0.0.1_debug"; 
+const char* VERSION = "a0.0.2_debug"; 
 
 void print_help(char** argv){
     printf("XASM Compile %s Community Version (%s_%s)\n",OS,VERSION,ARCH);
@@ -294,6 +294,18 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
                         readbuf[readcount] = '\t';
                         break;
 
+                    case 'r':
+                        readcount--;
+                        readbuf[readcount] = '\r';
+                        break;
+
+                    case 'x':
+                        readcount--;
+                        logger("\\x\n");
+                        fscanf(file_ptr, "%02hhx", &readbuf[readcount]);
+                        //readbuf[readcount] = '\x48';
+                        break;
+
                     default:
                         readcount--;
                         readbuf[readcount] = readbuf[readcount+1];
@@ -336,6 +348,18 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
                         readbuf[readcount] = '\t';
                         break;
 
+                    case 'r':
+                        readcount--;
+                        readbuf[readcount] = '\r';
+                        break;
+
+                    case 'x':
+                        readcount--;
+                        logger("\\x\n");
+                        fscanf(file_ptr, "%02hhx", &readbuf[readcount]);
+                        //readbuf[readcount] = '\x48';
+                        break;
+
                     default:
                         readcount--;
                         readbuf[readcount] = readbuf[readcount+1];
@@ -345,7 +369,6 @@ struct Command read_command(FILE* file_ptr,char* readbuf){
                     // if(readbuf[readcount] == EOF){
                     //     break;
                     // }
-                
                 default:
                     continue;
                     break;
@@ -454,6 +477,8 @@ void compile_file(char* input_filepath,char* output_filepath){
     }
     enum CommandKind kind = NORMAL;
     struct Command command;
+    int comp_size=0;
+    int code_uc=0;
     while((command = read_command(input_fptr,readbuffer)).length != EOF){
         // printf("kind: %d\n",command.kind);
 
@@ -461,15 +486,18 @@ void compile_file(char* input_filepath,char* output_filepath){
             continue;
         }
         logger("\nreader position: %zu\n",ftell(input_fptr));
+        logger("code unit count:%d\n",++code_uc);
 
         if(command.kind == COMMENT){
-            logger("comment: %s",readbuffer);
+            logger("comment: %s\n",readbuffer);
             continue;
         }
 
         if(command.kind == STRING){
             logger("writebuffer: %s\n",readbuffer);
             fputs(readbuffer,output_filepointer);
+            fflush(output_filepointer);
+            logger("compiled file size:%d\n",comp_size+=command.length);
             continue;
         }
 
@@ -480,12 +508,12 @@ void compile_file(char* input_filepath,char* output_filepath){
             logger("writebuffer: %x\n",command_hex.hex);
             fputc(command_hex.hex,output_filepointer);
             fflush(output_filepointer);
+            logger("compiled file size:%d\n",++comp_size);
         }else{
             logger("invalid command: %s\n",readbuffer);
         }
     }
-
-    logger("source filesize: %zu\n",input_filesize);
+    logger("\nsource filesize: %zu\n",input_filesize);
 
     fclose(input_fptr);
     fclose(output_filepointer);
