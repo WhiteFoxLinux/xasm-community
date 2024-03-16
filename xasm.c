@@ -36,7 +36,7 @@ void usleep(int usec){
 
 const char* OS = "linux";
 const char* ARCH = "amd64";
-const char* VERSION = "a0.0.3_debug"; 
+const char* VERSION = "a0.0.4_debug"; 
 
 // Print Help 打印帮助
 
@@ -60,7 +60,7 @@ typedef struct {
 }Option;
 
 int str_eq(char* s1,char* s2){
-    for(int index=0;;index++){
+    for(int index = 0;;index++){
         if(s1[index] != s2[index]){
             return 0;
         }
@@ -78,7 +78,7 @@ Option loop_parse_options(int argc, char** argv){
     option_data.cpu_clock = -1;
     option_data.non_log_file = 0;
 
-    for(int index=1;index < argc;index++){
+    for(int index = 1;index < argc;index++){
         char* cur_arg = argv[index];
         if(str_eq(cur_arg,"-h") || str_eq(cur_arg,"--help")){
             print_help(argv);
@@ -172,11 +172,11 @@ int logger(const char *__format, ...){
     return res;
 }
 
-int* virt_mem=NULL;
-unsigned int exec_ptr=0;
+int* virt_mem = NULL;
+unsigned int exec_ptr = 0;
 
 typedef enum {
-    EXECUTE_NORMAL=0,
+    EXECUTE_NORMAL = 0,
     EXECUTE_STORAGE,
 }ExecuteMode;
 
@@ -522,7 +522,7 @@ void getn(){
     unsigned int num_addr = merge();
     exec_ptr += 4;
     logger("Getn(0x%08x)\n",num_addr);
-    int num=0;
+    int num = 0;
 
     if(scanf("%d",&num) != 1){
         logger("Error: Invalid Number\n");
@@ -539,7 +539,7 @@ void geth(){
     unsigned int hex_addr = merge();
     exec_ptr += 4;
     logger("Geth(0x%08x)\n",hex_addr);
-    int hex=0x00;
+    int hex = 0x00;
 
     if(scanf("%x",&hex) != 1){
         logger("Error: Invalid hex\n");
@@ -618,8 +618,8 @@ int cpu_clock;
 
 void execute(){
     unsigned int run_per_sec = 1000000 / cpu_clock  > 0 ? 1000000 / cpu_clock : 0;
-    unsigned int exec_count=0;
-    for (int halt=0;!halt;exec_ptr++)
+    unsigned int exec_count = 0;
+    for (int halt = 0;!halt;exec_ptr++)
     {
         exec_count++;
         cpu_clock == -1?:usleep(run_per_sec);
